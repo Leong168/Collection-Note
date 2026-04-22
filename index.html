@@ -3,72 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fixed IT Collection Note</title>
+    <title>IT Collection Note - Frameless</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* This removes the "frame" and background during printing */
         @media print {
             .no-print { display: none !important; }
-            .container-box { border: 1px solid #000; box-shadow: none; width: 100% !important; margin: 0; }
-            body { background: white; }
+            body { background: white !important; padding: 0 !important; }
+            .main-container { 
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 100% !important; 
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .input-field { border: none !important; border-bottom: 1px solid #000 !important; }
         }
-        /* Reliable input styling */
-        .input-box { width: 100%; border-bottom: 1px solid #cbd5e1; outline: none; padding: 4px; background: transparent; }
-        .input-box:focus { border-bottom: 2px solid #6366f1; }
-        /* Forces SKU to wrap if long */
-        .sku-textarea { min-height: 40px; resize: vertical; }
+        .input-field { width: 100%; border-bottom: 1px solid #cbd5e1; outline: none; padding: 4px; background: transparent; }
+        .sku-area { min-height: 50px; resize: vertical; }
     </style>
 </head>
-<body class="bg-gray-100 p-4 md:p-10">
+<body class="bg-gray-200 p-2 md:p-10">
 
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg container-box overflow-hidden">
+    <div class="main-container max-w-4xl mx-auto bg-white p-6 md:p-10 shadow-lg min-h-screen flex flex-col">
         
-        <div class="bg-slate-800 text-white p-6 flex justify-between items-center print:bg-white print:text-black print:border-b-2 print:border-black">
-            <div>
-                <h1 class="text-xl font-bold uppercase tracking-wider">Collection Note</h1>
-                <p class="text-xs text-slate-400 print:text-gray-500 mt-1">IT Dept Asset Retrieval</p>
-            </div>
-            <button onclick="window.print()" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded font-bold transition shadow-lg">
-                PRINT FOR DRIVER
+        <div class="flex justify-between items-center border-b-2 border-black pb-4 mb-8">
+            <h1 class="text-2xl font-black uppercase">Collection Note</h1>
+            <button onclick="window.print()" class="no-print bg-black text-white px-6 py-2 font-bold rounded hover:bg-gray-800 transition">
+                PRINT NOW
             </button>
         </div>
 
-        <div class="p-8 space-y-10">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Customer Name</label>
-                        <input type="text" placeholder="Enter name..." class="input-box font-semibold text-lg">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Collection Address</label>
-                        <textarea placeholder="Enter full address..." class="input-box text-sm" rows="2"></textarea>
-                    </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Customer Name</label>
+                    <input type="text" placeholder="Type here..." class="input-field font-bold text-lg">
                 </div>
-                <div class="md:text-right flex flex-col justify-start md:items-end">
-                    <div class="w-full md:w-64">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Requested By</label>
-                        <input type="text" placeholder="Staff Name" class="input-box md:text-right">
-                    </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Collection Address</label>
+                    <textarea placeholder="Type address..." class="input-field text-sm" rows="2"></textarea>
                 </div>
             </div>
+            <div class="md:text-right">
+                <label class="text-xs font-bold text-gray-500 uppercase">Requested By</label>
+                <input type="text" placeholder="Staff Name" class="input-field md:text-right">
+            </div>
+        </div>
 
-            <div>
-                <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="border-b-2 border-slate-300 text-[11px] font-bold uppercase text-slate-600">
-                            <th class="text-left py-2 px-1" style="width: 50%;">SKU / Description</th>
-                            <th class="text-left py-2 px-1" style="width: 30%;">Serial Number</th>
-                            <th class="text-center py-2 px-1" style="width: 10%;">Qty</th>
-                            <th class="no-print py-2 px-1" style="width: 10%;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="sku-body">
-                        <tr class="border-b border-gray-200">
-                            <td class="py-3 px-1">
-                                <textarea placeholder="Long SKU Description..." class="input-box text-sm sku-textarea"></textarea>
-                            </td>
-                            <td class="py-3 px-1 align-top">
-                                <input type="text" placeholder="S/N" class="input-box text-sm">
-                            </td>
-                            <td class="py-3 px-1
+        <div class="flex-grow">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b-2 border-gray-300 text-xs font-black uppercase">
+                        <th class="text-left py-2" style="width: 55%;">SKU / Description</th>
+                        <th class="text-left py-2" style="width: 25%;">Serial Number</th>
+                        <th class="text-center py-2" style="width: 10%;">Qty</th>
+                        <th class="no-print py-2" style="width: 10%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="sku-list">
+                    <tr class="border-b border-gray-200">
+                        <td class="py-4 pr-2">
+                            <textarea placeholder="Enter SKU name (will wrap automatically)" class="input-field text-sm sku-area"></textarea>
+                        </td>
+                        <td class="py-4 px-1 align-top">
+                            <input type="text" placeholder="S/N" class="input-field text-sm">
+                        </td>
+                        <td class="py-4 px-1 align-top text-center">
+                            <input type="number" value="1" class="input-field text-center text-sm">
+                        </td>
+                        <td class="no-print py-4 text-center align-top">
+                            <button onclick="deleteRow(this)" class="text-red-500 font-bold">REMOVE</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mt-6 no-print">
+                <button onclick
