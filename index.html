@@ -3,59 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Collection Note - Final Fixed</title>
+    <title>Fixed IT Collection Note</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
             .no-print { display: none !important; }
             .container-box { border: 1px solid #000; box-shadow: none; width: 100% !important; margin: 0; }
             body { background: white; }
-            textarea, input { border: none !important; }
         }
-        .line-input { border-bottom: 1px solid #e2e8f0; width: 100%; outline: none; padding: 4px 0; background: transparent; resize: none; overflow: hidden; }
-        .line-input:focus { border-bottom-color: #6366f1; }
+        /* Reliable input styling */
+        .input-box { width: 100%; border-bottom: 1px solid #cbd5e1; outline: none; padding: 4px; background: transparent; }
+        .input-box:focus { border-bottom: 2px solid #6366f1; }
+        /* Forces SKU to wrap if long */
+        .sku-textarea { min-height: 40px; resize: vertical; }
     </style>
 </head>
 <body class="bg-gray-100 p-4 md:p-10">
 
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg container-box">
-        <div class="bg-slate-800 text-white p-6 flex justify-between items-center print:bg-white print:text-black print:border-b">
-            <h1 class="text-xl font-bold uppercase tracking-widest">Collection Note</h1>
-            <button onclick="window.print()" class="no-print bg-emerald-600 px-4 py-2 rounded font-bold hover:bg-emerald-700 transition">
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg container-box overflow-hidden">
+        
+        <div class="bg-slate-800 text-white p-6 flex justify-between items-center print:bg-white print:text-black print:border-b-2 print:border-black">
+            <div>
+                <h1 class="text-xl font-bold uppercase tracking-wider">Collection Note</h1>
+                <p class="text-xs text-slate-400 print:text-gray-500 mt-1">IT Dept Asset Retrieval</p>
+            </div>
+            <button onclick="window.print()" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded font-bold transition shadow-lg">
                 PRINT FOR DRIVER
             </button>
         </div>
 
-        <div class="p-8 space-y-6">
-            <div class="grid grid-cols-2 gap-8">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase">Customer Name</label>
-                    <input type="text" placeholder="Enter Name" class="line-input font-bold">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase mt-4 block">Collection Address</label>
-                    <textarea placeholder="Enter Full Address" class="line-input text-sm" rows="1" oninput="autoExpand(this)"></textarea>
+        <div class="p-8 space-y-10">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Customer Name</label>
+                        <input type="text" placeholder="Enter name..." class="input-box font-semibold text-lg">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Collection Address</label>
+                        <textarea placeholder="Enter full address..." class="input-box text-sm" rows="2"></textarea>
+                    </div>
                 </div>
-                <div class="text-right">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase">Requested By</label>
-                    <input type="text" placeholder="Staff Name" class="line-input text-right">
+                <div class="md:text-right flex flex-col justify-start md:items-end">
+                    <div class="w-full md:w-64">
+                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Requested By</label>
+                        <input type="text" placeholder="Staff Name" class="input-box md:text-right">
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-8">
-                <table class="w-full border-collapse" style="table-layout: fixed;">
+            <div>
+                <table class="w-full border-collapse">
                     <thead>
-                        <tr class="border-b-2 border-slate-200 text-[10px] uppercase text-gray-500">
-                            <th class="text-left pb-2 px-1" style="width: 50%;">SKU / Description</th>
-                            <th class="text-left pb-2 px-1" style="width: 30%;">Serial Number</th>
-                            <th class="text-center pb-2 px-1" style="width: 12%;">Qty</th>
-                            <th class="no-print" style="width: 8%;"></th>
+                        <tr class="border-b-2 border-slate-300 text-[11px] font-bold uppercase text-slate-600">
+                            <th class="text-left py-2 px-1" style="width: 50%;">SKU / Description</th>
+                            <th class="text-left py-2 px-1" style="width: 30%;">Serial Number</th>
+                            <th class="text-center py-2 px-1" style="width: 10%;">Qty</th>
+                            <th class="no-print py-2 px-1" style="width: 10%;"></th>
                         </tr>
                     </thead>
-                    <tbody id="skuBody">
-                        <tr class="border-b border-gray-100">
-                            <td class="py-2 px-1">
-                                <textarea placeholder="Enter SKU (wraps automatically)" class="line-input text-sm" rows="1" oninput="autoExpand(this)"></textarea>
+                    <tbody id="sku-body">
+                        <tr class="border-b border-gray-200">
+                            <td class="py-3 px-1">
+                                <textarea placeholder="Long SKU Description..." class="input-box text-sm sku-textarea"></textarea>
                             </td>
-                            <td class="py-2 px-1 align-top">
-                                <input type="text" placeholder="S/N" class="line-input text-sm">
+                            <td class="py-3 px-1 align-top">
+                                <input type="text" placeholder="S/N" class="input-box text-sm">
                             </td>
-                            <td class="py-2 px-1 text
+                            <td class="py-3 px-1
