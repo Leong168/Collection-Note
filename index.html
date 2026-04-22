@@ -3,47 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Collection Note</title>
+    <title>Multi-Item Collection Note</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
-            /* Hide UI elements like buttons and the signature canvas during print */
-            .no-print, #clear, button, .signature-box {
-                display: none !important;
-            }
-            
-            /* Show specific print-only signature lines */
-            .print-only {
-                display: block !important;
-            }
-
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .container-box {
-                box-shadow: none;
-                border: 1px solid #000;
-                width: 100%;
-            }
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .container-box { border: 1px solid #000; box-shadow: none; width: 100%; max-width: 100%; }
+            input, textarea { border: none !important; }
         }
-
-        .print-only {
-            display: none;
-        }
+        /* Custom styling for the table inputs */
+        .item-input { width: 100%; outline: none; border-bottom: 1px dashed #e2e8f0; padding: 4px; }
+        .item-input:focus { border-bottom-color: #6366f1; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-4 md:p-10">
 
-    <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden container-box">
-        <div class="border-b-2 border-slate-800 p-6 flex justify-between items-center">
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden container-box">
+        <div class="border-b-2 border-slate-800 p-6 flex justify-between items-center bg-slate-800 text-white print:bg-white print:text-black">
             <div>
                 <h1 class="text-2xl font-bold uppercase">Collection Note</h1>
-                <p class="text-gray-500 text-sm">Ref: #<span id="note-ref"></span></p>
+                <p class="text-slate-400 print:text-gray-500 text-sm">Ref: #<span id="note-ref"></span></p>
             </div>
-            <div class="text-right no-print">
-                <button onclick="window.print()" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold hover:bg-emerald-700">
+            <div class="no-print">
+                <button onclick="window.print()" class="bg-emerald-600 text-white px-6 py-2 rounded font-bold hover:bg-emerald-700 shadow-md">
                     🖨️ PRINT FOR DRIVER
                 </button>
             </div>
@@ -53,59 +36,61 @@
             <div class="grid grid-cols-2 gap-8">
                 <div>
                     <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Customer / Location</h3>
-                    <p class="font-bold text-lg"><input type="text" placeholder="Customer Name" class="border-b border-dashed border-gray-300 w-full outline-none"></p>
-                    <p class="text-gray-600 mt-2"><textarea placeholder="Collection Address" class="w-full border-b border-dashed border-gray-300 outline-none" rows="2"></textarea></p>
+                    <input type="text" placeholder="Customer Name" class="font-bold text-lg border-b border-gray-200 w-full outline-none mb-2">
+                    <textarea placeholder="Collection Address" class="w-full border-b border-gray-200 outline-none text-gray-600" rows="2"></textarea>
                 </div>
                 <div class="text-right">
                     <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Requested By</h3>
-                    <input type="text" placeholder="Name" class="text-right border-b border-dashed border-gray-300 outline-none w-full">
+                    <input type="text" placeholder="Staff Name" class="text-right border-b border-gray-200 outline-none w-full font-medium">
                 </div>
             </div>
-
-            <table class="w-full border-collapse">
-                <thead>
-                    <tr class="bg-slate-50 border-b-2 border-slate-200">
-                        <th class="text-left py-3 px-2 text-xs font-bold uppercase">SKU</th>
-                        <th class="text-left py-3 px-2 text-xs font-bold uppercase">Serial Number</th>
-                        <th class="text-center py-3 px-2 text-xs font-bold uppercase w-20">Qty</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b border-gray-200">
-                        <td class="py-4 px-2"><input type="text" placeholder="SKU" class="w-full outline-none"></td>
-                        <td class="py-4 px-2"><input type="text" placeholder="Serial No." class="w-full outline-none"></td>
-                        <td class="py-4 px-2 text-center"><input type="number" value="1" class="w-12 text-center outline-none"></td>
-                    </tr>
-                </tbody>
-            </table>
 
             <div>
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Remarks / Item Condition</h3>
-                <input type="text" placeholder="Describe condition (e.g. Wrapped in bubble wrap, missing cables)" class="w-full border-b border-dashed border-gray-300 py-2 outline-none">
+                <table class="w-full border-collapse" id="sku-table">
+                    <thead>
+                        <tr class="bg-slate-50 border-b-2 border-slate-200">
+                            <th class="text-left py-3 px-2 text-xs font-bold uppercase text-slate-600">SKU</th>
+                            <th class="text-left py-3 px-2 text-xs font-bold uppercase text-slate-600">Serial Number</th>
+                            <th class="text-center py-3 px-2 text-xs font-bold uppercase text-slate-600 w-20">Qty</th>
+                            <th class="no-print w-10"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="sku-body">
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 px-2"><input type="text" placeholder="SKU" class="item-input"></td>
+                            <td class="py-3 px-2"><input type="text" placeholder="Serial No." class="item-input"></td>
+                            <td class="py-3 px-2 text-center"><input type="number" value="1" class="item-input text-center"></td>
+                            <td class="no-print text-center">
+                                <button onclick="removeRow(this)" class="text-red-400 hover:text-red-600">✕</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="mt-4 no-print">
+                    <button onclick="addRow()" class="flex items-center text-indigo-600 font-semibold hover:text-indigo-800">
+                        <span class="mr-1 text-xl">+</span> Add Multiple SKUs
+                    </button>
+                </div>
             </div>
 
-            <div class="print-only pt-12">
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Remarks / Condition</h3>
+                <input type="text" placeholder="Note any damages or missing parts..." class="w-full border-b border-gray-200 py-2 outline-none text-gray-700">
+            </div>
+
+            <div class="pt-12 mt-auto">
                 <div class="grid grid-cols-2 gap-12">
                     <div class="border-t border-black pt-2">
-                        <p class="text-xs font-bold uppercase">Driver / Collected By</p>
-                        <p class="text-gray-400 text-[10px] mt-1">Date & Time:</p>
+                        <p class="text-xs font-bold uppercase italic text-gray-800">Driver / Collected By</p>
+                        <p class="text-[10px] mt-1 text-gray-400">Sign & Date Above</p>
                     </div>
                     <div class="border-t border-black pt-2">
-                        <p class="text-xs font-bold uppercase">IT Dept / Received By</p>
-                        <p class="text-gray-400 text-[10px] mt-1">Date & Time:</p>
+                        <p class="text-xs font-bold uppercase italic text-gray-800">IT Dept / Received By</p>
+                        <p class="text-[10px] mt-1 text-gray-400">Sign & Date Above</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-slate-50 p-4 text-center text-[10px] text-gray-400 no-print">
-            Fill in the details above and click print to generate the driver's hardcopy.
-        </div>
-    </div>
-
-    <script>
-        // Generate a simple random reference number
-        document.getElementById('note-ref').innerText = Math.floor(Math.random() * 90000) + 10000;
-    </script>
-</body>
-</html>
+        <div class="bg-slate-50 p-4 text-center text-[10px] text-gray-4
