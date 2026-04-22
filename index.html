@@ -3,118 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Collection Note System</title>
+    <title>IT Collection Note</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-</head>
-<body class="bg-gray-50 min-h-screen p-4 md:p-8">
-
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
-        <div class="bg-slate-800 p-6 text-white text-center">
-            <h1 class="text-2xl font-bold uppercase tracking-wide">Collection Note</h1>
-            <p class="text-slate-400 text-sm">IT Department Asset Management</p>
-        </div>
-
-        <form id="collectionForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <style>
+        @media print {
+            /* Hide UI elements like buttons and the signature canvas during print */
+            .no-print, #clear, button, .signature-box {
+                display: none !important;
+            }
             
-            <div class="space-y-4">
-                <h3 class="font-semibold text-slate-700 border-b pb-2">Client Details</h3>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Customer Name</label>
-                    <input type="text" id="customerName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Collection Address</label>
-                    <textarea id="address" rows="2" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"></textarea>
-                </div>
-            </div>
+            /* Show specific print-only signature lines */
+            .print-only {
+                display: block !important;
+            }
 
-            <div class="space-y-4">
-                <h3 class="font-semibold text-slate-700 border-b pb-2">Asset Information</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">SKU</label>
-                        <input type="text" id="sku" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Quantity</label>
-                        <input type="number" id="qty" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Serial Number</label>
-                    <input type="text" id="serial" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
-                </div>
-            </div>
+            body {
+                background: white;
+                padding: 0;
+            }
 
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700">Remarks / Condition</label>
-                <input type="text" id="remarks" placeholder="e.g. Minor scratches, no charger" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
-            </div>
+            .container-box {
+                box-shadow: none;
+                border: 1px solid #000;
+                width: 100%;
+            }
+        }
 
-            <div class="space-y-4 md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Requested By</label>
-                    <input type="text" id="requestBy" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Received By (IT Dept)</label>
-                    <input type="text" id="receivedIT" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Collected By (Sign below)</label>
-                    <div class="border rounded-md bg-gray-100 mt-1">
-                        <canvas id="signature-pad" class="w-full h-32"></canvas>
-                    </div>
-                    <button type="button" id="clear" class="text-xs text-red-500 mt-1 underline">Clear Signature</button>
-                </div>
-            </div>
+        .print-only {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-10">
 
-            <div class="md:col-span-2 pt-4">
-                <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-md font-bold hover:bg-indigo-700 transition duration-200">
-                    GENERATE COLLECTION NOTE
+    <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden container-box">
+        <div class="border-b-2 border-slate-800 p-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold uppercase">Collection Note</h1>
+                <p class="text-gray-500 text-sm">Ref: #<span id="note-ref"></span></p>
+            </div>
+            <div class="text-right no-print">
+                <button onclick="window.print()" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold hover:bg-emerald-700">
+                    🖨️ PRINT FOR DRIVER
                 </button>
             </div>
-        </form>
+        </div>
+
+        <div class="p-8 space-y-8">
+            <div class="grid grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Customer / Location</h3>
+                    <p class="font-bold text-lg"><input type="text" placeholder="Customer Name" class="border-b border-dashed border-gray-300 w-full outline-none"></p>
+                    <p class="text-gray-600 mt-2"><textarea placeholder="Collection Address" class="w-full border-b border-dashed border-gray-300 outline-none" rows="2"></textarea></p>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Requested By</h3>
+                    <input type="text" placeholder="Name" class="text-right border-b border-dashed border-gray-300 outline-none w-full">
+                </div>
+            </div>
+
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b-2 border-slate-200">
+                        <th class="text-left py-3 px-2 text-xs font-bold uppercase">SKU</th>
+                        <th class="text-left py-3 px-2 text-xs font-bold uppercase">Serial Number</th>
+                        <th class="text-center py-3 px-2 text-xs font-bold uppercase w-20">Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-gray-200">
+                        <td class="py-4 px-2"><input type="text" placeholder="SKU" class="w-full outline-none"></td>
+                        <td class="py-4 px-2"><input type="text" placeholder="Serial No." class="w-full outline-none"></td>
+                        <td class="py-4 px-2 text-center"><input type="number" value="1" class="w-12 text-center outline-none"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Remarks / Item Condition</h3>
+                <input type="text" placeholder="Describe condition (e.g. Wrapped in bubble wrap, missing cables)" class="w-full border-b border-dashed border-gray-300 py-2 outline-none">
+            </div>
+
+            <div class="print-only pt-12">
+                <div class="grid grid-cols-2 gap-12">
+                    <div class="border-t border-black pt-2">
+                        <p class="text-xs font-bold uppercase">Driver / Collected By</p>
+                        <p class="text-gray-400 text-[10px] mt-1">Date & Time:</p>
+                    </div>
+                    <div class="border-t border-black pt-2">
+                        <p class="text-xs font-bold uppercase">IT Dept / Received By</p>
+                        <p class="text-gray-400 text-[10px] mt-1">Date & Time:</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-50 p-4 text-center text-[10px] text-gray-400 no-print">
+            Fill in the details above and click print to generate the driver's hardcopy.
+        </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('signature-pad');
-        const signaturePad = new SignaturePad(canvas);
-
-        // Adjust canvas sizing
-        function resizeCanvas() {
-            const ratio =  Math.max(window.devicePixelRatio || 1, 1);
-            canvas.width = canvas.offsetWidth * ratio;
-            canvas.height = canvas.offsetHeight * ratio;
-            canvas.getContext("2d").scale(ratio, ratio);
-            signaturePad.clear();
-        }
-        window.onresize = resizeCanvas;
-        resizeCanvas();
-
-        document.getElementById('clear').addEventListener('click', () => signaturePad.clear());
-
-        document.getElementById('collectionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (signaturePad.isEmpty()) {
-                alert("Please provide a signature for 'Collected By'");
-                return;
-            }
-
-            // In a real app, you would send this to a database
-            const formData = {
-                customer: document.getElementById('customerName').value,
-                sku: document.getElementById('sku').value,
-                serial: document.getElementById('serial').value,
-                itStaff: document.getElementById('receivedIT').value,
-                signature: signaturePad.toDataURL()
-            };
-
-            console.log("Saving Collection Note:", formData);
-            alert("Collection Note for " + formData.customer + " has been logged to console!");
-        });
+        // Generate a simple random reference number
+        document.getElementById('note-ref').innerText = Math.floor(Math.random() * 90000) + 10000;
     </script>
 </body>
 </html>
